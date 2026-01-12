@@ -1,7 +1,8 @@
+
 /* Optional accent font (keep if you still use it anywhere) */
 @import url("https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&display=swap");
 
-/* Self-hosted fonts */
+/* ---------- Self-hosted fonts (match your old setup) ---------- */
 @font-face {
   font-family: "AktivGrotesk";
   src: url("/fonts/AktivGrotesk-Regular.ttf") format("truetype");
@@ -18,339 +19,315 @@
   font-display: swap;
 }
 
-:root {
-  --font-body: "AktivGrotesk", system-ui, -apple-system, BlinkMacSystemFont,
-    "Segoe UI", sans-serif;
-  --font-heading: "NewRodin", "AktivGrotesk", system-ui, -apple-system,
-    BlinkMacSystemFont, sans-serif;
-  --font-accent: "Pixelify Sans", system-ui, -apple-system, BlinkMacSystemFont,
-    sans-serif;
-
-  --app-vh: 1vh;
+/* ---------- Reset / base ---------- */
+:root{
+  --app-vh: 1vh; /* main.js sets this on load/resize, safe fallback */
+  --bg: #000;
+  --text: rgba(255,255,255,0.88);
+  --text-dim: rgba(255,255,255,0.62);
+  --border: rgba(255,255,255,0.14);
+  --border-strong: rgba(255,255,255,0.22);
+  --shadow: 0 18px 60px rgba(0,0,0,0.55);
+  --maxw: 1024px;
+  --radius: 18px;
+  --radius-sm: 12px;
+  --ease: cubic-bezier(.2,.8,.2,1);
 }
 
-html,
-body,
-#root {
+*,
+*::before,
+*::after{
+  box-sizing: border-box;
+}
+
+html, body{
   height: 100%;
   margin: 0;
   padding: 0;
-  font-family: var(--font-body);
-  background: #000;
-}
-
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  font-family: var(--font-heading);
-}
-
-.app-root {
-  position: relative;
-  width: 100%;
-  min-height: 100vh;
-  color: #f5f5f5;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "AktivGrotesk", system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
 }
 
-/* THREE layer */
-.three-container {
-  position: fixed;
-  inset: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: 0;
-
-  /* helps iOS compositing */
-  transform: translateZ(0);
-  -webkit-transform: translateZ(0);
-  will-change: transform;
-}
-
-.three-canvas {
-  position: fixed; /* fixed is more reliable than absolute on iOS */
-  inset: 0;
-  width: 100%;
-  height: 100%;
+img{
+  max-width: 100%;
   display: block;
 }
 
-/* Top bar (marquee left + email right) */
-.top-shell {
-  position: fixed;
-  top: 32px;
-  left: 0;
-  right: 0;
-  z-index: 20;
-  transition: opacity 0.2s linear;
-  pointer-events: none;
-}
-
-.top-inner {
-  max-width: 1024px;
-  margin: 0 auto;
-  padding: 0 24px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.marquee-window {
-  overflow: hidden;
-  white-space: nowrap;
-  max-width: 130px;
-  font-size: 11px;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-}
-
-.marquee-track {
-  display: inline-block;
-  white-space: nowrap;
-  animation: ohm-marquee 5s linear infinite;
-}
-
-@keyframes ohm-marquee {
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(-50%);
-  }
-}
-
-.top-email a {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  pointer-events: auto;
+a{
+  color: inherit;
   text-decoration: none;
 }
 
-.top-logo {
-  width: 200px; /* FIX: was 200x */
-  height: 100px;
+button{
+  font-family: inherit;
+  color: inherit;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+
+button:focus-visible,
+a:focus-visible{
+  outline: 2px solid rgba(255,255,255,0.65);
+  outline-offset: 2px;
+  border-radius: 10px;
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce){
+  *{
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ---------- App shell ---------- */
+#app{
+  position: relative;
+  min-height: 100vh;
+}
+
+/* THREE background */
+#three-container{
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+#three-container canvas{
+  width: 100% !important;
+  height: 100% !important;
   display: block;
-  opacity: 0.95;
-  transform: translateY(0);
-  transition: opacity 0.15s ease, transform 0.15s ease;
 }
 
-.top-email a:hover .top-logo {
-  opacity: 1;
-  transform: translateY(-1px);
-}
-
-/* Main layout: traditional vertical scroll */
-.app-main {
-  position: relative;
+/* ---------- Top marquee / logo ---------- */
+.top-shell{
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
   z-index: 10;
-  scroll-snap-type: none !important;
+  pointer-events: none; /* enable clicks only on specific items */
 }
 
-.main-inner {
-  max-width: 1024px;
-  margin: 0 auto;
-}
-
-/* Sections – normal flow, no snap */
-.section {
-  position: relative;
-  box-sizing: border-box;
-  padding: 64px 24px;
-  min-height: calc(var(--app-vh) * 100);
+.top-inner{
+  width: min(var(--maxw), calc(100% - 32px));
+  margin: 16px auto 0;
   display: flex;
   align-items: center;
-  justify-content: center;
-
-  opacity: 1;
-  transform: none;
-  pointer-events: auto;
-  transition: none;
-
-  scroll-snap-align: none !important;
+  justify-content: space-between;
+  gap: 14px;
 }
 
-/* HERO */
-.section-hero {
-  padding: 0 24px;
-  align-items: stretch;
+.marquee-window{
+  pointer-events: none;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 8px 14px;
+  backdrop-filter: blur(10px);
+  background: rgba(0,0,0,0.35);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.35);
 }
 
-.hero-inner {
-  max-width: 720px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  height: calc(var(--app-vh) * 100);
-  box-sizing: border-box;
-  padding-top: 56px;
-  padding-bottom: 56px;
-  text-align: center;
+.marquee-track{
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+  white-space: nowrap;
+  will-change: transform;
+  animation: marquee 16s linear infinite;
 }
 
-.hero-title {
-  font-family: var(--font-heading);
-  font-weight: 600;
-  font-size: 32px;
-  letter-spacing: 0.12em;
+.marquee-track span{
+  font-size: 12px;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+@keyframes marquee{
+  0%   { transform: translateX(0%); }
+  100% { transform: translateX(-50%); }
+}
+
+.top-email{
+  pointer-events: auto; /* clickable */
+}
+
+.top-logo{
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: rgba(0,0,0,0.35);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+  padding: 6px;
+  transition: transform 220ms var(--ease), border-color 220ms var(--ease);
+}
+
+.top-email a:hover .top-logo{
+  transform: translateY(-1px);
+  border-color: var(--border-strong);
+}
+
+/* ---------- Main content ---------- */
+.app-main{
+  position: relative;
+  z-index: 5;
+}
+
+.section{
+  min-height: calc(var(--app-vh) * 100);
+  padding: 92px 16px 110px; /* leave room for top + footer */
+  display: flex;
+  align-items: center;
+}
+
+.section > *{
+  width: min(var(--maxw), 100%);
+  margin: 0 auto;
+}
+
+.section h2{
+  font-family: "NewRodin", "AktivGrotesk", system-ui, sans-serif;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  font-size: clamp(28px, 4vw, 44px);
+  margin: 0 0 14px;
+}
+
+.section p{
+  margin: 0 0 18px;
+  line-height: 1.55;
+  color: var(--text-dim);
+  font-size: 16px;
+  max-width: 70ch;
+}
+
+.section button,
+.section a.button{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: rgba(0,0,0,0.35);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+  transition: transform 200ms var(--ease), border-color 200ms var(--ease), background 200ms var(--ease);
+}
+
+.section button:hover,
+.section a.button:hover{
+  transform: translateY(-1px);
+  border-color: var(--border-strong);
+  background: rgba(0,0,0,0.45);
+}
+
+/* ---------- Hero ---------- */
+.section-hero{
+  padding-top: 120px;
+}
+
+.hero-inner{
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 22px;
+  align-items: end;
+}
+
+.hero-title{
+  font-family: "NewRodin", "AktivGrotesk", system-ui, sans-serif;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  font-size: clamp(54px, 9vw, 110px);
+  line-height: 0.95;
   margin: 0;
 }
 
-.hero-bottom {
-  margin-top: auto;
-}
-
-.hero-copy {
+.hero-copy{
+  margin: 0;
   font-size: 16px;
-  line-height: 1.7;
-  max-width: 720px;
-  margin: 0 auto;
-}
-
-.hero-enter {
-  margin-top: 20px;
-  padding: 10px 22px;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.7);
-  background: rgba(0, 0, 0, 0.5);
-  color: #fff;
-  cursor: pointer;
-
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-
-  font-size: 11px;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-}
-
-/* Section cards (non-hero) */
-.section-inner {
-  max-width: 640px;
-  width: 100%;
-  margin: 0 auto;
-
-  padding: 32px 28px 28px;
-  border-radius: 6px;
-  background: rgba(0, 0, 0, 0.45);
-
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.7);
-
-  display: flex;
-  flex-direction: column;
-  text-align: left;
-}
-
-.section-title {
-  font-family: var(--font-heading);
-  font-weight: 600;
-  font-size: 24px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  margin: 0 0 16px 0;
-}
-
-.section-body {
-  font-size: 16px; /* FIX: was 32x */
-  opacity: 0.8;
   line-height: 1.6;
-  margin: 0 0 20px 0;
+  color: var(--text-dim);
+  max-width: 78ch;
 }
 
-.section-cta {
-  align-self: flex-start;
-  padding: 10px 22px;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.7);
-  background: rgba(0, 0, 0, 0.5);
-  color: #fff;
-  cursor: pointer;
-
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-
-  font-size: 11px;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
+.hero-enter{
+  margin-top: 16px;
+  width: fit-content;
 }
 
-/* Footer nav */
-.footer-nav {
+/* ---------- Footer nav ---------- */
+.footer-nav{
   position: fixed;
-  left: 50%;
-  bottom: calc(env(safe-area-inset-bottom, 0px) + 24px);
-  transform: translateX(-50%);
-  z-index: 20;
-  width: 100%;
-  max-width: 1024px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10;
+  padding: 12px 16px 18px;
   display: flex;
   justify-content: center;
-  gap: 12px;
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.16em;
-  transition: opacity 0.2s linear;
+  pointer-events: none;
 }
 
-.footer-button {
-  padding: 10px 18px;
+.footer-nav > button{
+  pointer-events: auto;
+  border: 1px solid var(--border);
+  background: rgba(0,0,0,0.35);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+  padding: 10px 14px;
   border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.35);
-  background: rgba(0, 0, 0, 0.45);
-  color: #fff;
-  cursor: pointer;
-
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-
-  outline: none;
-  transform: translateY(0) scale(1);
-  transition: background 0.1s ease, border-color 0.1s ease, transform 0.1s ease;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.7);
+  transition: transform 180ms var(--ease), border-color 180ms var(--ease), color 180ms var(--ease), background 180ms var(--ease);
+  margin: 0 6px;
 }
 
-.footer-button.is-hover,
-.footer-button.is-active {
-  transform: translateY(-2px) scale(1.02);
-  border-color: rgba(255, 255, 255, 0.7);
+.footer-nav > button:hover{
+  transform: translateY(-1px);
+  border-color: var(--border-strong);
+  color: rgba(255,255,255,0.92);
+  background: rgba(0,0,0,0.48);
 }
 
-.footer-button.is-hover {
-  background: rgba(255, 255, 255, 0.1);
+/* If you decide to add an "active" class in JS later */
+.footer-nav > button.is-active{
+  border-color: rgba(255,255,255,0.35);
+  color: rgba(255,255,255,0.95);
 }
 
-.footer-button.is-active {
-  background: rgba(255, 255, 255, 0.18);
-}
-
-/* =========================
-   iOS SAFARI FIX:
-   backdrop-filter over WebGL often makes the canvas render black.
-   Disable blur on iOS (keep translucency).
-   ========================= */
-@supports (-webkit-touch-callout: none) {
-  .section-inner,
-  .hero-enter,
-  .section-cta,
-  .footer-button {
-    -webkit-backdrop-filter: none !important;
-    backdrop-filter: none !important;
+/* ---------- Mobile tweaks ---------- */
+@media (max-width: 640px){
+  .top-inner{
+    width: calc(100% - 24px);
+    margin-top: 12px;
   }
-
-  /* Slightly stronger alpha to compensate for no blur */
-  .section-inner {
-    background: rgba(0, 0, 0, 0.6);
+  .marquee-window{
+    padding: 7px 12px;
   }
-  .hero-enter,
-  .section-cta,
-  .footer-button {
-    background: rgba(0, 0, 0, 0.6);
+  .section{
+    padding: 86px 14px 106px;
+  }
+  .footer-nav{
+    padding-bottom: 14px;
+  }
+  .footer-nav > button{
+    padding: 10px 12px;
+    margin: 0 4px;
   }
 }
