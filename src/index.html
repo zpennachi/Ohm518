@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>OHM</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="app">
+
+    <!-- THREE -->
+    <div id="three-container"></div>
+
+    <!-- TOP UI -->
+    <div class="top-shell">
+      <div class="top-inner">
+        <div class="marquee-window">
+          <div class="marquee-track">
+            <span>Music / Art / Tech / Community /&nbsp;&nbsp;</span>
+            <span>Music / Art / Tech / Community /&nbsp;&nbsp;</span>
+          </div>
+        </div>
+        <div class="top-email">
+          <a href="mailto:ohmalbany@gmail.com">
+            <img class="top-logo" src="images/logo-sphere.svg" alt="OHM" />
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONTENT -->
+    <main class="app-main">
+      <section class="section section-hero" data-key="mission">
+        <div class="hero-inner">
+          <h1 class="hero-title">Ohm</h1>
+          <p class="hero-copy">
+            OHM envisions a thriving Capital Region of New York where electronic music and arts serve as a vibrant cultural cornerstone.
+          </p>
+          <button class="hero-enter" data-nav="contact">Enter</button>
+        </div>
+      </section>
+
+      <section class="section" data-key="contact">
+        <h2>Mission</h2>
+        <p>OHM is dedicated to advancing electronic art & music culture in Albany…</p>
+      </section>
+
+      <section class="section" data-key="donations">
+        <h2>Donations</h2>
+        <p>The OHM Organization is a grassroots nonprofit…</p>
+        <button data-link="https://www.gofundme.com/">Support OHM</button>
+      </section>
+
+      <section class="section" data-key="shop">
+        <h2>Shop</h2>
+        <button data-link="https://www.shopify.com/">Buy Merch</button>
+      </section>
+
+      <section class="section" data-key="events">
+        <h2>Contact</h2>
+        <button data-link="mailto:ohmalbany@gmail.com">Email Us</button>
+      </section>
+    </main>
+
+    <!-- FOOTER NAV -->
+    <div class="footer-nav"></div>
+
+  </div>
+
+  <script type="module" src="main.js"></script>
+</body>
+</html>
